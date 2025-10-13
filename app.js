@@ -36,7 +36,7 @@ const CLEANUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in ms
 // cleanupUnverifiedAccounts();
 // setInterval(cleanupUnverifiedAccounts, CLEANUP_INTERVAL);
 
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
 	console.log(`Auth Service running on http://localhost:${PORT}`),
 );

@@ -1,0 +1,105 @@
+# Node modules
+node_modules/
+*/node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+*/.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Cache & temporary files
+.cache/
+*/.cache/
+.tmp/
+*/.tmp/
+
+# Coverage reports
+coverage/
+*/coverage/
+
+# Build directories
+dist/
+*/dist/
+build/
+*/build/
+
+# Firebase credentials
+firebase-debug.log
+firebase-debug.log.*
+
+# Neo4j & MongoDB Data (if any service temporarily stores data)
+data/
+*/data/
+
+# Docker files and volumes
+docker-compose.override.yml
+docker-compose.debug.yml
+docker-compose.prod.yml
+.docker/
+*/.docker/
+docker-data/
+docker/
+
+# VSCode settings (optional)
+.vscode/
+*/.vscode/
+
+# Nginx or other reverse-proxy configuration files
+nginx/
+nginx.conf
+
+# Logs for various services
+auth-service/logs/
+user-service/logs/
+post-service/logs/
+search-service/logs/
+messaging-service/logs/
+group-service/logs/
+notification-service/logs/
+api-gateway/logs/
+
+# Generated Swagger/OpenAPI files (if applicable)
+swagger.yaml
+swagger.json
+*/swagger.yaml
+*/swagger.json
+
+# PM2 process manager files (optional)
+.pm2/
+*.pid
+*.seed
+*.log
+
+# Central monitoring or analytics configurations (e.g., Prometheus, Grafana)
+prometheus-data/
+grafana-data/
+monitoring/
+logs/monitoring/
+
+# Temporary or backup files
+*.bak
+*.swp
+*.swo
+*.tmp
+~$
+
+# Editor settings (Optional)
+.idea/
+*.sublime*
+*.vscode*
+
+# Migration script (exclude from version control)
+migrate.js
+.qodo
+serviceAccountKey.json

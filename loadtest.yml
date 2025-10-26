@@ -1,0 +1,26 @@
+config:
+  target: 'http://backend-authservice-iosuff-40b5fe-16-170-110-247.traefik.me'
+  phases:
+    - duration: 60
+      arrivalRate: 500
+
+  http:
+    timeout: 30
+    headers:
+      User-Agent: 'Artillery Load Test'
+      Origin: 'http://uploaddoc.app'
+
+  plugins:
+    ensure:
+      thresholds:
+        - http.response_time.p95: 800
+        - http.response_time.max: 2000
+        - http.codes.200: 95
+
+scenarios:
+  - name: 'Fetch all admins'
+    flow:
+      - get:
+          url: '/api/users/admins'
+          expect:
+            - statusCode: 200

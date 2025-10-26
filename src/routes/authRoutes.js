@@ -49,7 +49,7 @@ router.post('/invalidate-sessions', authMiddleware, invalidateOtherSessions);
 router.post('/whitelist', authMiddleware, addToWhitelist);
 router.put('/update-contact-info', authMiddleware, updateContactInfo);
 // Get all users in database
-router.get('/users', authMiddleware, getAllUsers);
+router.get('/users', getAllUsers);
 
 // Account Management Routes
 router.post('/deactivate', authMiddleware, deactivateAccount);

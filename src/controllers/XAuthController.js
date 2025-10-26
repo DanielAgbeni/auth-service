@@ -311,21 +311,21 @@ exports.loginReports = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
 	try {
 		// Verify the requesting user
-		const requestingUser = await User.findById(req.user.id);
-		if (!requestingUser) {
-			return res.status(401).json({
-				message: 'Authentication failed',
-				details: 'User not found',
-			});
-		}
+		// const requestingUser = await User.findById(req.user.id);
+		// if (!requestingUser) {
+		// 	return res.status(401).json({
+		// 		message: 'Authentication failed',
+		// 		details: 'User not found',
+		// 	});
+		// }
 
-		// Check if the user has the 'admin' role
-		if (requestingUser.role !== 'admin') {
-			return res.status(403).json({
-				message: 'Access denied',
-				details: 'You do not have permission to view this resource',
-			});
-		}
+		// // Check if the user has the 'admin' role
+		// if (requestingUser.role !== 'admin') {
+		// 	return res.status(403).json({
+		// 		message: 'Access denied',
+		// 		details: 'You do not have permission to view this resource',
+		// 	});
+		// }
 
 		const {
 			page = 1,

@@ -61,7 +61,7 @@ exports.register = async (req, res) => {
 				email,
 				password: hashedPassword,
 				username,
-				himeNumber, // Now correctly passed
+				himeNumber: generateHimeNumber(1),
 				userType: 'normal', // Explicitly set
 				role: 'user',
 			});

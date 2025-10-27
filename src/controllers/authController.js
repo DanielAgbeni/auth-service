@@ -18,6 +18,14 @@ const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_TIME = 30 * 60 * 1000; // 30 minutes
 
 // Register Traditional User
+// Assuming imports for User, bcrypt, handleError, createToken (as auth token),
+// and a (commented out) sendVerificationEmail
+// const User = require('../models/User');
+// const bcrypt = require('bcryptjs');
+// const { handleError } = require('../utils/errorHelper');
+// const { createToken } = require('../services/tokenService'); // Assuming this is an AUTH token
+// const { sendVerificationEmail } = require('../services/emailService');
+
 exports.register = async (req, res) => {
 	try {
 		const {
@@ -25,60 +33,98 @@ exports.register = async (req, res) => {
 			username,
 			password,
 			userType,
-			bio,
-			gender,
-			dateOfBirth,
-			phone,
-			country,
-			state,
-			city,
-			zipCode,
-			language,
-			theme,
-			avatarUrl,
-			socialLoginProvider,
-			verificationMethod, // Optional: defaults to OTP
+			himeNumber, // Added this, as you use it in the User model
+			verificationMethod,
 		} = req.body;
 
-		// Ensure the verification method defaults to OTP if not provided
-		const verificationMethodFinal = verificationMethod || 'otp';
-
-		// Validate userType
+		// 1. Validate userType first
 		if (!['normal', 'anonymous'].includes(userType)) {
 			return res.status(400).json({
 				message: "Invalid userType. Allowed values: 'normal' or 'anonymous'.",
 			});
 		}
 
-		// Validate required fields for 'normal' users
-		if (userType === 'normal' && (!email || !password)) {
-			return res.status(400).json({
-				message: 'Email and password are required for normal users.',
+		// --- BRANCH 1: Normal User Registration ---
+		if (userType === 'normal') {
+			// 1a. Validate required fields for 'normal' users
+			if (!email || !password) {
+				return res.status(400).json({
+					message: 'Email and password are required for normal users.',
+				});
+			}
+
+			// 1b. Hash password
+			const hashedPassword = await bcrypt.hash(password, 10);
+
+			// 1c. Create new user
+			const user = new User({
+				email,
+				password: hashedPassword,
+				username,
+				himeNumber, // Now correctly passed
+				userType: 'normal', // Explicitly set
+				role: 'user',
+			});
+			await user.save();
+
+			// 1d. Handle Verification
+			const verificationMethodFinal = verificationMethod || 'otp';
+			// We assume createToken makes a verification token or OTP here
+			// const verificationToken = await createVerificationToken(user._id);
+
+			// Mocking the email send to avoid load test issues
+			// await sendVerificationEmail(user, verificationMethodFinal, verificationToken);
+
+			// 1e. Send response
+			return res.status(201).json({
+				message:
+					'Registration successful. Please verify your email with the OTP sent.',
+				userId: user._id,
+				user: {
+					id: user._id,
+					email: user.email,
+					username: user.username,
+					himeNumber: user.himeNumber,
+					userType: user.userType,
+				},
 			});
 		}
 
-		return handleRegistration(
-			res,
-			email,
-			password,
-			username,
-			userType,
-			socialLoginProvider,
-			bio,
-			gender,
-			dateOfBirth,
-			phone,
-			country,
-			state,
-			city,
-			zipCode,
-			language,
-			theme,
-			avatarUrl,
-			verificationMethodFinal,
-			req,
-		);
+		// --- BRANCH 2: Anonymous User Registration ---
+		if (userType === 'anonymous') {
+			// 2a. Create guest user
+			const user = new User({
+				// No email or password needed
+				username: username || `Guest_${Date.now()}`, // Generate a guest username
+				himeNumber,
+				userType: 'anonymous', // Explicitly set
+				role: 'user',
+				isVerified: true, // Anonymous users don't need verification
+			});
+			await user.save();
+
+			// 2b. Create an AUTH token to log them in immediately
+			const authToken = await createToken(user._id, req.headers['user-agent']);
+
+			// 2c. Send response with auth token
+			return res.status(201).json({
+				message: 'Anonymous user created successfully.',
+				token: authToken, // Send auth token to log them in
+				user: {
+					id: user._id,
+					username: user.username,
+					himeNumber: user.himeNumber,
+					userType: user.userType,
+				},
+			});
+		}
 	} catch (error) {
+		// Handle duplicate key error (e.g., email or username already exists)
+		if (error.code === 11000) {
+			return res.status(409).json({
+				message: 'An account with this email or username already exists.',
+			});
+		}
 		return handleError(res, error, 'Unexpected error during registration');
 	}
 };

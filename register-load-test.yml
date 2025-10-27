@@ -1,10 +1,16 @@
 config:
   target: 'http://backend-authservice-iosuff-40b5fe-16-170-110-247.traefik.me'
   phases:
-    # 30 seconds with 50 new virtual users per second
+    # Phase 1: Ramp up from 10 to 50 new users/sec over 15 seconds
+    - duration: 15
+      arrivalRate: 10
+      rampTo: 50
+      name: 'Ramp-up Phase'
+
+    # Phase 2: Sustain 50 new users/sec for 30 seconds
     - duration: 30
       arrivalRate: 50
-      name: 'Register 50 users per second for 30 seconds'
+      name: 'Sustain 50 users/sec'
 
   http:
     timeout: 30
@@ -16,9 +22,9 @@ config:
   plugins:
     ensure:
       thresholds:
-        - http.response_time.p95: 800
-        - http.response_time.max: 2000
-        - http.codes.5xx: 0
+        - http.response_time.p95: 800 # 95% of requests under 800ms
+        - http.response_time.max: 2000 # Max 2 seconds
+        - http.codes.5xx: 0 # No server errors
 
 scenarios:
   - name: 'User Registration Load Test'
